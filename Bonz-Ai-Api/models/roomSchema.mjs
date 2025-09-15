@@ -1,28 +1,31 @@
+// roomSchema.mjs
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 
+//Ska flyttas till services/client.mjs
 const client = new DynamoDBClient({ region: 'eu-north-1' });
 const dynamoDb = DynamoDBDocumentClient.from(client);
 
 const ROOM_TABLE = 'RoomTypes';
 
+// Här definierar vi schemat med PK och attribut
 const rooms = [
 	{
-		roomType: 'single',
+		PK: 'single',
 		totalRooms: 7,
 		availableRooms: 7,
 		capacity: 1,
 		price: 500,
 	},
 	{
-		roomType: 'double',
+		PK: 'double',
 		totalRooms: 7,
 		availableRooms: 7,
 		capacity: 2,
 		price: 1000,
 	},
 	{
-		roomType: 'suite',
+		PK: 'suite',
 		totalRooms: 6,
 		availableRooms: 6,
 		capacity: 3,

@@ -1,110 +1,89 @@
-import AWS from 'aws-sdk';
+// functions/Bookings/index.js
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import {
+	DynamoDBDocumentClient,
+	GetCommand,
+	PutCommand,
+	UpdateCommand,
+} from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-const ROOMS_TABLE = process.env.ROOMS_TABLE || 'RoomTypes';
-const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE || 'Bookings';
+const client = new DynamoDBClient({});
+const dynamoDb = DynamoDBDocumentClient.from(client);
+
+const BOOKINGS_TABLE = 'Bookings';
+const ROOM_TABLE = 'RoomTypes';
 
 export const handler = async (event) => {
 	try {
-		const body = JSON.parse(event.body);
-		const { guestName, rooms, totalGuests } = body;
+		const { guestName, rooms, totalGuests } = JSON.parse(event.body);
 
-		if (!guestName || !rooms?.length || totalGuests == null) {
-			return {
-				statusCode: 400,
-				body: JSON.stringify({ error: 'Missing required fields' }),
-			};
-		}
-
-		// :one: Check room availability
-		let totalCapacity = 0;
+		let calculatedTotalGuests = 0;
 		let totalPrice = 0;
 
-		for (const r of rooms) {
-			const roomType = r.type;
-			const qty = r.qty;
-
-			// Get room info using PK
-			const roomData = await dynamoDb
-				.get({
-					TableName: ROOMS_TABLE,
-					Key: { PK: roomType },
+		// 1️⃣ Check room availability & calculate price/guests
+		for (const room of rooms) {
+			const roomData = await dynamoDb.send(
+				new GetCommand({
+					TableName: ROOM_TABLE,
+					Key: { PK: room.type },
 				})
-				.promise();
-
-			if (!roomData.Item) {
+			);
+			if (!roomData.Item)
 				return {
 					statusCode: 400,
-					body: JSON.stringify({
-						error: `Invalid room type: ${roomType}`,
-					}),
+					body: `Room type ${room.type} does not exist`,
 				};
-			}
-
-			if (roomData.Item.availableRooms < qty) {
+			if (room.qty > roomData.Item.availableRooms)
 				return {
 					statusCode: 400,
-					body: JSON.stringify({
-						error: `Not enough ${roomType} rooms available`,
-					}),
+					body: `Not enough ${room.type} rooms available`,
 				};
-			}
 
-			totalCapacity += roomData.Item.capacity * qty;
-			totalPrice += roomData.Item.price * qty;
+			// Calculate total guests and price
+			calculatedTotalGuests += room.qty * roomData.Item.capacity;
+			totalPrice += room.qty * roomData.Item.price;
 		}
 
-		if (totalCapacity < totalGuests) {
+		// 2️⃣ Validate guest count matches the rooms
+		if (totalGuests !== calculatedTotalGuests) {
 			return {
 				statusCode: 400,
-				body: JSON.stringify({
-					error: 'Not enough room capacity for totalGuests',
-				}),
+				body: `Total guests (${totalGuests}) does not match room capacity (${calculatedTotalGuests})`,
 			};
 		}
 
-		// :two: Update room availability atomically
-		for (const r of rooms) {
-			const { type, qty } = r;
-			await dynamoDb
-				.update({
-					TableName: ROOMS_TABLE,
-					Key: { PK: type },
+		// 3️⃣ Update availableRooms in RoomTypes
+		for (const room of rooms) {
+			await dynamoDb.send(
+				new UpdateCommand({
+					TableName: ROOM_TABLE,
+					Key: { PK: room.type },
 					UpdateExpression:
 						'SET availableRooms = availableRooms - :qty',
-					ConditionExpression: 'availableRooms >= :qty',
-					ExpressionAttributeValues: { ':qty': qty },
+					ExpressionAttributeValues: { ':qty': room.qty },
 				})
-				.promise();
+			);
 		}
 
-		// :three: Create booking
+		// 4️⃣ Create booking
 		const bookingId = uuidv4();
-		const createdAt = new Date().toISOString();
 		const bookingItem = {
-			PK: bookingId, // matchar serverless.yml
+			PK: bookingId,
 			guestName,
 			rooms,
 			totalGuests,
 			totalPrice,
-			createdAt,
+			createdAt: new Date().toISOString(),
 			status: 'confirmed',
 		};
 
-		await dynamoDb
-			.put({ TableName: BOOKINGS_TABLE, Item: bookingItem })
-			.promise();
+		await dynamoDb.send(
+			new PutCommand({ TableName: BOOKINGS_TABLE, Item: bookingItem })
+		);
 
-		return {
-			statusCode: 201,
-			body: JSON.stringify(bookingItem),
-		};
-	} catch (error) {
-		console.error(error);
-		return {
-			statusCode: 500,
-			body: JSON.stringify({ error: 'Internal Server Error' }),
-		};
+		return { statusCode: 201, body: JSON.stringify(bookingItem) };
+	} catch (err) {
+		return { statusCode: 500, body: err.message };
 	}
 };
