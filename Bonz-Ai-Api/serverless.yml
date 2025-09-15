@@ -1,7 +1,7 @@
 # prettier-ignore
 
 org: ${file(./config.yml):aws.org}
-service: bonz.ai-api
+service: bonzai-api
 
 provider:
   name: aws
@@ -11,43 +11,43 @@ provider:
     role: ${file(./config.yml):aws.role}
 
 functions:
-  handler:
-    handler: Bookings/index.handler
+  createBooking:
+    handler: functions/Bookings/index.handler
     events:
       - httpApi:
           path: /api/bookings
           method: POST
 
-  handler:
-    handler: GetRooms/index.handler
+  getRooms:
+    handler: functions/GetRooms/index.handler
     events:
       - httpApi:
           path: /api/rooms
           method: GET
   
-  handler:
-    handler: GetRoomByType/index.handler
+  getRoomsByType:
+    handler: functions/GetRoomByType/index.handler
     events:
       - httpApi:
           path: /api/rooms/{type}
           method: GET
 
-  handler:
-    handler: GetBookingsById/index.handler
+  getBookingById:
+    handler: functions/GetBookingsById/index.handler
     events:
       - httpApi:
           path: /api/bookings/{id}
           method: GET
 
-  handler:
-    handler: RemoveBooking/index.handler
+  removeBooking:
+    handler: functions/RemoveBooking/index.handler
     events:
       - httpApi:
           path: /api/bookings/{id}
           method: DELETE
 
-  handler:
-    handler: ChangeBooking/index.handler
+  changeBooking:
+    handler: functions/ChangeBooking/index.handler
     events:
       - httpApi:
           path: /api/bookings/{id}
@@ -59,34 +59,25 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: RoomTypes
-      AttributeDefinitions:
-        - AttributeName: PK
-          AttributeType: S
-      KeySchema:
-        - AttributeName: SK
-          KeyType: HASH
-      BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
 
     BookingsTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: Bookings
-      AttributeDefinitions:
-        - AttributeName: PK
-          AttributeType: S
-        - AttributeName: SK
-          AttributeType: S
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
         KeySchema:
-          - AttributeName: bookingId
+          - AttributeName: PK
             KeyType: HASH
-
-        GlobalSecondaryIndexes:
-          - IndexName: RoomTypeIndex
-          KeySchema:
-          - AttributeName: roomType
-            KeyType: HASH
-          Projection:
-            ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
+
     
     
