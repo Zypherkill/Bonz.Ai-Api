@@ -2,7 +2,7 @@ import { DynamoDBDocumentClient, PutCommand, UpdateCommand } from '@aws-sdk/lib-
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { generateBookingId } from '../utils/generateBookingId.mjs';
 
-const client = new DynamoDBClient({});
+const client = new DynamoDBClient({ region: 'eu-north-1' });
 const dynamoDb = DynamoDBDocumentClient.from(client);
 
 const BOOKINGS_TABLE = 'Bookings';
@@ -12,8 +12,7 @@ export const addBooking = async (guestName, rooms, totalGuests, totalPrice) => {
 	const timestamp = new Date().toISOString();
 
 	const bookingItem = {
-		PK: `BOOKING#${bookingId}`,
-		id: bookingId,
+		PK: bookingId,
 		guestName,
 		rooms,
 		totalGuests,
@@ -51,7 +50,7 @@ export const updateBooking = async (bookingId, updates) => {
   const result = await dynamoDb.send(
     new UpdateCommand({
       TableName: BOOKINGS_TABLE,
-      Key: { PK: `BOOKING#${bookingId}` },
+      Key: { PK: bookingId },
       UpdateExpression: updateExpr,
       ExpressionAttributeValues: expressionValues,
       ReturnValues: 'ALL_NEW',

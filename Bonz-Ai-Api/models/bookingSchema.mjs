@@ -1,7 +1,5 @@
-// bookingSchema.mjs
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { v4 as uuidv4 } from 'uuid';
 
 const client = new DynamoDBClient({ region: 'eu-north-1' });
 const dynamoDb = DynamoDBDocumentClient.from(client);
