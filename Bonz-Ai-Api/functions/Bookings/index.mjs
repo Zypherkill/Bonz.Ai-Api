@@ -75,6 +75,8 @@ export const handler = async (event) => {
 			totalGuests,
 			totalPrice,
 			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			numberOfRooms: rooms.reduce((sum, room) => sum + room.qty, 0),
 			status: 'confirmed',
 		};
 
