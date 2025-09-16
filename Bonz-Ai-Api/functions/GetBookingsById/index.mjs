@@ -1,8 +1,7 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 
-const client = new DynamoDBClient({});
-const dynamoDb = DynamoDBDocumentClient.from(client);
+const client = new DynamoDBClient({ region: 'eu-north-1' });
 
 const BOOKINGS_TABLE = 'Bookings';
 
@@ -20,7 +19,7 @@ export const handler = async (event) => {
     const result = await dynamoDb.send(
       new GetCommand({
         TableName: BOOKINGS_TABLE,
-        Key: { PK:`BOOKING#${bookingId}` },
+        Key: { PK:bookingId },
       })
     );
 

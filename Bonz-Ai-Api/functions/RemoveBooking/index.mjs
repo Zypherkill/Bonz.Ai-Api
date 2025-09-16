@@ -1,8 +1,8 @@
 import AWS from 'aws-sdk';
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
-const ROOMS_TABLE = process.env.ROOMS_TABLE || 'RoomTypes';
-const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE || 'Bookings';
+const ROOMS_TABLE = 'RoomTypes';
+const BOOKINGS_TABLE = 'Bookings';
 
 export const handler = async (event) => {
 	try {
