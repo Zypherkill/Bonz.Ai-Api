@@ -18,11 +18,11 @@ functions:
           path: /api/bookings
           method: POST
 
-  getRooms:
-    handler: functions/GetRooms/index.handler
+  getBookings:
+    handler: functions/GetBookings/index.handler
     events:
       - httpApi:
-          path: /api/rooms
+          path: /api/bookings
           method: GET
   
   getRoomsByType:
