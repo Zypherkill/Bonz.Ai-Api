@@ -1,4 +1,3 @@
-// functions/Bookings/index.js
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
 	DynamoDBDocumentClient,
@@ -7,6 +6,7 @@ import {
 	UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { v4 as uuidv4 } from 'uuid';
+import { generateBookingId } from '../../utils/generateBookingId.mjs';
 
 const client = new DynamoDBClient({});
 const dynamoDb = DynamoDBDocumentClient.from(client);
@@ -67,7 +67,7 @@ export const handler = async (event) => {
 		}
 
 		// 4️⃣ Create booking
-		const bookingId = uuidv4();
+		const bookingId = generateBookingId(8);
 		const bookingItem = {
 			PK: bookingId,
 			guestName,
@@ -75,6 +75,8 @@ export const handler = async (event) => {
 			totalGuests,
 			totalPrice,
 			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			numberOfRooms: rooms.reduce((sum, room) => sum + room.qty, 0),
 			status: 'confirmed',
 		};
 
