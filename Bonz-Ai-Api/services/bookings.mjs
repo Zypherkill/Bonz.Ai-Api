@@ -13,7 +13,6 @@ export const addBooking = async (guestName, rooms, totalGuests, totalPrice) => {
 
 	const bookingItem = {
 		PK: `BOOKING#${bookingId}`,
-		SK: `GUEST#${guestName}`,
 		id: bookingId,
 		guestName,
 		rooms,

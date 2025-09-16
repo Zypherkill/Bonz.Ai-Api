@@ -4,7 +4,7 @@ import {
 	UpdateCommand,
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { addBooking } from '../services/bookings.js';
+import { addBooking } from '../../services/bookings.mjs';
 
 const client = new DynamoDBClient({});
 const dynamoDb = DynamoDBDocumentClient.from(client);
