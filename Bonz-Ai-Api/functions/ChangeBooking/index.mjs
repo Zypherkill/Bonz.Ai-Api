@@ -1,110 +1,24 @@
-import AWS from 'aws-sdk';
-import { v4 as uuidv4 } from 'uuid';
+import { updateBooking } from '../../services/bookings.mjs';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-const ROOMS_TABLE = process.env.ROOMS_TABLE || 'RoomTypes';
-const BOOKINGS_TABLE = process.env.BOOKINGS_TABLE || 'Bookings';
+const client = new DynamoDBClient({});
+const dynamoDb = DynamoDBDocumentClient.from(client);
+
 
 export const handler = async (event) => {
-	try {
-		const body = JSON.parse(event.body);
-		const { guestName, rooms, totalGuests } = body;
+  try {
+    const bookingId = event.pathParameters.id;
+    const updates = JSON.parse(event.body);
 
-		if (!guestName || !rooms || !totalGuests) {
-			return {
-				statusCode: 400,
-				body: JSON.stringify({ error: 'Missing required fields' }),
-			};
-		}
+    const updatedBooking = await updateBooking(bookingId, updates);
 
-		// :one: Check room availability
-		let totalCapacity = 0;
-		let totalPrice = 0;
+    if (!updatedBooking) {
+      return { statusCode: 404, body: `Booking ${bookingId} not found` };
+    }
 
-		for (const r of rooms) {
-			const roomType = r.type;
-			const qty = r.qty;
-
-			// Get room info
-			const roomData = await dynamoDb
-				.get({
-					TableName: ROOMS_TABLE,
-					Key: { roomType },
-				})
-				.promise();
-
-			if (!roomData.Item) {
-				return {
-					statusCode: 400,
-					body: JSON.stringify({
-						error: `Invalid room type: ${roomType}`,
-					}),
-				};
-			}
-
-			if (roomData.Item.availableRooms < qty) {
-				return {
-					statusCode: 400,
-					body: JSON.stringify({
-						error: `Not enough ${roomType} rooms available`,
-					}),
-				};
-			}
-
-			totalCapacity += roomData.Item.capacity * qty;
-			totalPrice += roomData.Item.price * qty;
-		}
-
-		if (totalCapacity < totalGuests) {
-			return {
-				statusCode: 400,
-				body: JSON.stringify({
-					error: 'Not enough room capacity for totalGuests',
-				}),
-			};
-		}
-
-		// :two: Update room availability atomically
-		for (const r of rooms) {
-			const { type, qty } = r;
-			await dynamoDb
-				.update({
-					TableName: ROOMS_TABLE,
-					Key: { roomType: type },
-					UpdateExpression:
-						'SET availableRooms = availableRooms - :qty',
-					ConditionExpression: 'availableRooms >= :qty',
-					ExpressionAttributeValues: { ':qty': qty },
-				})
-				.promise();
-		}
-
-		// :three: Create booking
-		const bookingId = uuidv4();
-		const createdAt = new Date().toISOString();
-		const bookingItem = {
-			bookingId,
-			guestName,
-			rooms,
-			totalGuests,
-			totalPrice,
-			createdAt,
-			status: 'confirmed',
-		};
-
-		await dynamoDb
-			.put({ TableName: BOOKINGS_TABLE, Item: bookingItem })
-			.promise();
-
-		return {
-			statusCode: 201,
-			body: JSON.stringify(bookingItem),
-		};
-	} catch (error) {
-		console.error(error);
-		return {
-			statusCode: 500,
-			body: JSON.stringify({ error: 'Internal Server Error' }),
-		};
-	}
+    return { statusCode: 200, body: JSON.stringify(updatedBooking) };
+  } catch (err) {
+    return { statusCode: 500, body: err.message };
+  }
 };

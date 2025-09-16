@@ -1,4 +1,4 @@
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, PutCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { generateBookingId } from '../utils/generateBookingId.mjs';
 
@@ -32,4 +32,31 @@ export const addBooking = async (guestName, rooms, totalGuests, totalPrice) => {
 	);
 
 	return bookingItem; // returnera så handler kan skicka som response
+};
+
+export const updateBooking = async (bookingId, updates) => {
+  const timestamp = new Date().toISOString();
+
+  // bygg dynamiskt UpdateExpression
+  const updateExpressions = [];
+  const expressionValues = { ':updatedAt': timestamp };
+
+  for (const [key, value] of Object.entries(updates)) {
+    updateExpressions.push(`${key} = :${key}`);
+    expressionValues[`:${key}`] = value;
+  }
+
+  const updateExpr = `SET ${updateExpressions.join(', ')}, updatedAt = :updatedAt`;
+
+  const result = await dynamoDb.send(
+    new UpdateCommand({
+      TableName: BOOKINGS_TABLE,
+      Key: { PK: `BOOKING#${bookingId}` },
+      UpdateExpression: updateExpr,
+      ExpressionAttributeValues: expressionValues,
+      ReturnValues: 'ALL_NEW',
+    })
+  );
+
+  return result.Attributes;
 };
