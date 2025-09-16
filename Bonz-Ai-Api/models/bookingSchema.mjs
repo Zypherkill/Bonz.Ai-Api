@@ -8,16 +8,18 @@ const dynamoDb = DynamoDBDocumentClient.from(client);
 
 const BOOKINGS_TABLE = 'Bookings';
 
-// Exempel på en bokning
-const bookingItem = {
-	PK: uuidv4(), // unikt bookingId
-	guestName: 'Anna Andersson',
-	rooms: [{ type: 'single', qty: 1 }],
-	totalGuests: 1,
-	totalPrice: 500,
-	createdAt: new Date().toISOString(),
-	status: 'confirmed',
-};
+const bookingId = generateBookingId(8);
+		const bookingItem = {
+			PK: bookingId,
+			guestName,
+			rooms,
+			totalGuests,
+			totalPrice,
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			numberOfRooms: rooms.reduce((sum, room) => sum + room.qty, 0),
+			status: 'confirmed',
+		};
 
 async function seedBooking() {
 	try {
