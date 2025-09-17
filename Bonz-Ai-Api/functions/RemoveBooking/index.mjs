@@ -21,7 +21,6 @@ export const handler = async (event) => {
 			return sendResponse(400, { error: 'Missing booking ID' });
 		}
 
-		// :one: Hämta bokningen
 		const { Item: booking } = await dynamoDb.send(
 			new GetCommand({
 				TableName: BOOKINGS_TABLE,
@@ -33,7 +32,6 @@ export const handler = async (event) => {
 			return sendResponse(404, { error: 'Booking not found' });
 		}
 
-		// :two: Återställ tillgängliga rum
 		for (const { type, qty } of booking.rooms) {
 			await dynamoDb.send(
 				new UpdateCommand({
@@ -46,7 +44,6 @@ export const handler = async (event) => {
 			);
 		}
 
-		// :three: Ta bort bokningen
 		await dynamoDb.send(
 			new DeleteCommand({
 				TableName: BOOKINGS_TABLE,

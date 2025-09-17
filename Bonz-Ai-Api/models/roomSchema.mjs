@@ -7,7 +7,6 @@ const dynamoDb = DynamoDBDocumentClient.from(client);
 
 const ROOM_TABLE = 'RoomTypes';
 
-// Här definierar vi schemat med PK och attribut
 const rooms = [
 	{
 		PK: 'single',
