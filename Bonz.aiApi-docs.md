@@ -1,207 +1,80 @@
-# Bonz.Ai-Api Documentation
+# Bonzai Booking API – Dokumentation
 
-## Menu
+## Bookings
 
-Method: ```GET```
+### Hämta alla bokningar
 
-URL: ```/api/menu```
+**Method:** `GET`
+**URL:** `/api/bookings`
 
-Description: Returns all items from menu
+**Beskrivning:** Returnerar alla bokningar i systemet.
 
-<hr>
+---
 
-Method: ```POST``` - **NY!**
+### Hämta en specifik bokning
 
-URL: ```/api/menu```
+**Method:** `GET`
+**URL:** `/api/bookings/{id}`
 
-Description: Adds new product to menu
+**Beskrivning:** Returnerar bokningen med det angivna boknings-ID\:t.
 
-Headers: `Authorization` : `<token>`
+---
 
-Body: 
-```
+### Skapa en ny bokning
+
+**Method:** `POST`
+**URL:** `/api/bookings`
+
+**Beskrivning:** Skapar en ny bokning baserat på uppgifter i request body.
+
+**Body-exempel:**
+
+```json
 {
-  "title" : <product name>,
-  "desc" : <product description>,
-  "price" : <product price>
+  "roomType": "<room type>",
+  "checkInDate": "<YYYY-MM-DD>",
+  "checkOutDate": "<YYYY-MM-DD>",
+  "guestName": "<name>",
+  "guestEmail": "<email>"
 }
 ```
 
-<hr>
+---
 
-Method: ```PUT``` - **NY!**
+### Ändra en bokning
 
-URL: ```/api/menu/{prodId}```
+**Method:** `PUT`
+**URL:** `/api/bookings/{id}`
 
-Description: Updates product in menu
+**Beskrivning:** Uppdaterar bokningen med det angivna ID\:t.
 
-Headers: `Authorization` : `<token>`
+**Body-exempel:**
 
-Body: 
-```
+```json
 {
-  "title" : <product name>,
-  "desc" : <product description>,
-  "price" : <product price>
+  "roomType": "<room type>",
+  "checkInDate": "<YYYY-MM-DD>",
+  "checkOutDate": "<YYYY-MM-DD>",
+  "guestName": "<name>",
+  "guestEmail": "<email>"
 }
 ```
 
-<hr>
+---
 
-Method: ```DELETE``` - **NY!**
+### Ta bort en bokning
 
-URL: ```/api/menu/{prodId}```
+**Method:** `DELETE`
+**URL:** `/api/bookings/{id}`
 
-Description: Deletes product in menu
+**Beskrivning:** Raderar en bokning med det angivna ID\:t.
 
-Headers: `Authorization` : `<token>`
+---
 
-## Auth
+## Databaser
 
-Method: ```GET```
+### DynamoDB-tabeller som används:
 
-URL: ```/api/auth/logout```
+* **RoomTypes**
 
-Description: Logout user
-
-<hr>
-
-Method: ```POST``` - **UPPDATERAD!**
-
-URL: ```/api/auth/register```
-
-Description: User registration where either "user" or "admin" is set as role in request body
-
-Body: 
-```
-{
-  "username" : <username>,
-  "password" : <password>,
-  "role" : <role>
-}
-```
-
-<hr>
-
-Method: ```POST```
-
-URL: ```/api/auth/login```
-
-Description: User login
-
-
-Body: 
-```
-{
-  "username" : <username>,
-  "password" : <password>
-}
-```
-
-## Cart
-
-Method: ```GET```
-
-URL: ```/api/cart```
-
-Description: Returns all carts
-
-<hr>
-
-Method: ```GET```
-
-URL: ```/api/cart/{cartId}```
-
-Description: Returns cart with the given cartId
-
-<hr>
-
-Method: ```PUT```
-
-URL: ```/api/cart```
-
-Description: Updates cart with the product sent in the request body. If user is logged in, the cart will be connected to that user. If user is not lgged in, a temporary guest-ID which will connect the user to the cart is returned in response along with the current cart. A guest user must, once a cart is created, also send his/her guestID in the following request bodys (see second example below).
-
-Body:
-```
-{
-  "prodId" : <prodId>,
-  "qty" : <qty>
-}
-```
-
-or
-```
-{
-  "guestId" : <guestId>
-  "prodId" : <prodId>,
-  "qty" : <qty>
-}
-```
-
-
-## Orders
-
-Method: ```GET```
-
-URL: ```/api/orders```
-
-Description: Returns all orders
-
-<hr>
-
-Method: ```GET```
-
-URL: ```/api/orders/{userId}```
-
-Description: Returns all orders connected to the userId sent in request params.
-
-<hr>
-
-Method: ```POST```
-
-URL: ```/api/orders```
-
-Description: Targets the cart received in request body and creates an order. The order is then sent back to the user in the response.
-
-Body:
-```
-{
-  "cartId" : <cartId>
-}
-```
-
-<hr>
-
-## Menu
-
-Method: ```GET```
-
-URL: ```/api/menu/search?query=espresso```
-
-Description: Search request where a search term is sent as a query parameter. Response contains all products matching the query string.
-
-
-## Cart
-
-Method: ```DELETE```
-
-URL: ```/api/cart/{cartId}```
-
-Description: Deletes cart 
-
-## Order
-
-Method: ```POST```
-
-URL: ```/api/orders```
-
-Description: Same call as above, but customer also has the option to add a note to the order (for example "Extra milk in Caffe Latte")
-
-Body:
-```
-{
-  "cartId" : <cartId>,
-  "note" : <Note to café>
-}
-```
+  * Innehåller informati
