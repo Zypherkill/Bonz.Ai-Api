@@ -119,6 +119,7 @@ export const updateBooking = async (bookingId, updates) => {
             }
         }
 
+		
         if (updates.rooms) {
             await updateAvailableRooms(bookingId, updates.rooms);
         }
