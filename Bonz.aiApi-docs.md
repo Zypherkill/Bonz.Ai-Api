@@ -30,7 +30,7 @@
 **Body-exempel:**
 
 ```json
-{"guestName": "nikki",
+{"guestName": "Nikki Fransman",
   "rooms": [
     { "type": "suite", "qty": 1 }
   ],
@@ -41,7 +41,7 @@
 ```json
 {
     "PK": "8d8accf8",
-    "guestName": "nikki",
+    "guestName": "Nikki Fransman",
     "rooms": [
         {
             "type": "suite",
@@ -69,7 +69,7 @@
 **Body-exempel:**
 
 ```json
-{"guestName": "Nikkis ostfralla",
+{"guestName": "Nikkis Fransman",
   "rooms": [
     { "type": "suite", "qty": 1 }
   ],
@@ -82,7 +82,7 @@
 ```json
 {
     "PK": "e72507b9",
-    "guestName": "Nikkis ostfralla",
+    "guestName": "Nikkis Fransman",
     "rooms": [
         {
             "type": "suite",
