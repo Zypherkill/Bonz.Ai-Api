@@ -69,7 +69,7 @@
 **Body-exempel:**
 
 ```json
-{"guestName": "Nikkis Fransman",
+{"guestName": "Nikki Fransman",
   "rooms": [
     { "type": "suite", "qty": 1 }
   ],
@@ -82,7 +82,7 @@
 ```json
 {
     "PK": "e72507b9",
-    "guestName": "Nikkis Fransman",
+    "guestName": "Nikki Fransman",
     "rooms": [
         {
             "type": "suite",
