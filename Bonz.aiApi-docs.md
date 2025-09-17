@@ -37,7 +37,27 @@
   "totalGuests": 1
 }
 ```
+**Response-exempel:**
+```json
+{
+    "PK": "8d8accf8",
+    "guestName": "nikki",
+    "rooms": [
+        {
+            "type": "suite",
+            "qty": 1
+        }
+    ],
+    "totalGuests": 1,
+    "totalPrice": 1500,
+    "createdAt": "2025-09-17T12:28:34.204Z",
+    "updatedAt": "2025-09-17T12:28:34.204Z",
+    "numberOfRooms": 1,
+    "status": "confirmed"
+}
+}
 
+```
 ---
 
 ### Ändra en bokning
@@ -56,6 +76,29 @@
   ],
   "totalGuests": 1
 }
+```
+
+**Response-exempel:**
+
+```json
+{
+    "totalPrice": 1000,
+    "totalGuests": 1,
+    "updatedAt": "2025-09-17T12:29:53.214Z",
+    "guestName": "Nikkis ostfralla",
+    "numberOfRooms": 1,
+    "status": "confirmed",
+    "rooms": [
+        {
+            "type": "suite",
+            "qty": 1
+        }
+    ],
+    "createdAt": "2025-09-17T12:27:53.002Z",
+    "PK": "121db7be"
+}
+
+
 ```
 
 ---
