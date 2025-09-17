@@ -83,8 +83,11 @@ export const updateBooking = async (bookingId, updates) => {
     const existingBooking = existingBookingResult.Item;
     if (!existingBooking) return null;
 
+    let totalPrice = existingBooking.totalPrice;
+
     if (updates.rooms) {
         let calculatedCapacity = 0;
+        totalPrice = 0; // återställ pris för att räkna om
 
         for (const room of updates.rooms) {
             const roomData = await dynamoDb.send(
@@ -98,7 +101,17 @@ export const updateBooking = async (bookingId, updates) => {
                 throw new Error(`Room type ${room.type} does not exist`);
             }
 
+            const oldQty = existingBooking.rooms.find(r => r.type === room.type)?.qty || 0;
+            const availableIncludingOld = roomData.Item.availableRooms + oldQty;
+
+            if (room.qty > availableIncludingOld) {
+                throw new Error(
+                    `Not enough ${room.type} rooms available. Max: ${availableIncludingOld}`
+                );
+            }
+
             calculatedCapacity += room.qty * roomData.Item.capacity;
+            totalPrice += room.qty * roomData.Item.price;
         }
 
         const guestsToCheck = updates.totalGuests ?? existingBooking.totalGuests;
@@ -107,12 +120,12 @@ export const updateBooking = async (bookingId, updates) => {
                 `Total guests (${guestsToCheck}) exceeds room capacity (${calculatedCapacity})`
             );
         }
-    }
 
-    if (updates.rooms) {
+
         await updateAvailableRooms(bookingId, updates.rooms);
     }
 
+    
     const updateExpressions = [];
     const expressionValues = { ':updatedAt': timestamp };
 
@@ -120,16 +133,17 @@ export const updateBooking = async (bookingId, updates) => {
         updateExpressions.push('rooms = :rooms');
         expressionValues[':rooms'] = updates.rooms;
 
-        const numberOfRooms = updates.rooms.reduce(
-            (sum, room) => sum + room.qty,
-            0
-        );
+        const numberOfRooms = updates.rooms.reduce((sum, room) => sum + room.qty, 0);
         updateExpressions.push('numberOfRooms = :numberOfRooms');
         expressionValues[':numberOfRooms'] = numberOfRooms;
+
+        
+        updateExpressions.push('totalPrice = :totalPrice');
+        expressionValues[':totalPrice'] = totalPrice;
     }
 
     for (const [key, value] of Object.entries(updates)) {
-        if (key === 'rooms' || key === 'numberOfRooms') continue;
+        if (key === 'rooms' || key === 'numberOfRooms' || key === 'totalPrice') continue;
         updateExpressions.push(`${key} = :${key}`);
         expressionValues[`:${key}`] = value;
     }
@@ -148,3 +162,4 @@ export const updateBooking = async (bookingId, updates) => {
 
     return result.Attributes;
 };
+
