@@ -1,3 +1,11 @@
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { updateBooking } from '../../services/bookings.mjs';
+import { sendResponse } from '../../responses/index.mjs';
+
+const client = new DynamoDBClient({ region: 'eu-north-1' });
+const dynamoDb = DynamoDBDocumentClient.from(client);
+
 export const handler = async (event) => {
     try {
         const bookingId = event.pathParameters.id;
