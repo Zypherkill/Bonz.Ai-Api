@@ -109,17 +109,17 @@
 
 ---
 
-### Databaser
+## Databaser
 
 DynamoDB-tabeller som används:
 
-## RoomTypes
+### RoomTypes
 
 Innehåller information om olika rumstyper som kan bokas.
 
 Nyckel: PK (Partition Key, typ: String).
 
-## Bookings
+### Bookings
 
 Innehåller alla skapade bokningar.
 
