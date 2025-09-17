@@ -21,7 +21,19 @@ export const handler = async () => {
 			return sendResponse(404, { error: 'No bookings found' });
 		}
 
-		return sendResponse(200, { bookings });
+		const formattedBookings = bookings.map(b => ({
+            PK: b.PK,
+            guestName: b.guestName,
+            rooms: b.rooms,
+            totalGuests: b.totalGuests,
+            totalPrice: b.totalPrice,
+            createdAt: b.createdAt,
+            updatedAt: b.updatedAt,
+            numberOfRooms: b.numberOfRooms,
+            status: b.status
+        }));
+
+        return sendResponse(200, formattedBookings);
 	} catch (error) {
 		console.error(error);
 		return sendResponse(500, { error: 'Internal Server Error' });
