@@ -81,20 +81,20 @@
 
 ```json
 {
-    "totalPrice": 1000,
-    "totalGuests": 1,
-    "updatedAt": "2025-09-17T12:29:53.214Z",
+    "PK": "e72507b9",
     "guestName": "Nikkis ostfralla",
-    "numberOfRooms": 1,
-    "status": "confirmed",
     "rooms": [
         {
             "type": "suite",
-            "qty": 1
+            "qty": 2
         }
     ],
-    "createdAt": "2025-09-17T12:27:53.002Z",
-    "PK": "121db7be"
+    "totalGuests": 1,
+    "totalPrice": 1500,
+    "createdAt": "2025-09-17T12:52:52.531Z",
+    "updatedAt": "2025-09-17T12:54:06.443Z",
+    "numberOfRooms": 2,
+    "status": "confirmed"
 }
 ```
 
