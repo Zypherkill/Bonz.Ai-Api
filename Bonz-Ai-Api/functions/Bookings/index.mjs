@@ -5,6 +5,7 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { addBooking } from '../../services/bookings.mjs';
+import { sendResponse } from '../../responses/index.mjs';
 
 const client = new DynamoDBClient({ region: 'eu-north-1' });
 const dynamoDb = DynamoDBDocumentClient.from(client);
@@ -27,17 +28,15 @@ export const handler = async (event) => {
 			);
 
 			if (!roomData.Item) {
-				return {
-					statusCode: 400,
-					body: `Room type ${room.type} does not exist`,
-				};
+				return sendResponse(400, {
+					error: `Room type ${room.type} does not exist`,
+				});
 			}
 
 			if (room.qty > roomData.Item.availableRooms) {
-				return {
-					statusCode: 400,
-					body: `Not enough ${room.type} rooms available`,
-				};
+				return sendResponse(400, {
+					error: `Not enough ${room.type} rooms available`,
+				});
 			}
 
 			calculatedTotalGuests += room.qty * roomData.Item.capacity;
@@ -45,11 +44,11 @@ export const handler = async (event) => {
 		}
 
 		if (totalGuests > calculatedTotalGuests) {
-			return {
-				statusCode: 400,
-				body: `Total guests (${totalGuests}) does not match room capacity (${calculatedTotalGuests})`,
-			};
+			return sendResponse(400, {
+				error: `Total guests (${totalGuests}) exceeds room capacity (${calculatedTotalGuests})`,
+			});
 		}
+
 		for (const room of rooms) {
 			await dynamoDb.send(
 				new UpdateCommand({
@@ -69,8 +68,8 @@ export const handler = async (event) => {
 			totalPrice
 		);
 
-		return { statusCode: 201, body: JSON.stringify(bookingItem) };
+		return sendResponse(201, bookingItem);
 	} catch (err) {
-		return { statusCode: 500, body: err.message };
+		return sendResponse(500, { error: err.message });
 	}
 };

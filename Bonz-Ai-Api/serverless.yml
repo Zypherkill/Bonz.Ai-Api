@@ -24,13 +24,6 @@ functions:
       - httpApi:
           path: /api/bookings
           method: GET
-  
-  getRoomsByType:
-    handler: functions/GetRoomByType/index.handler
-    events:
-      - httpApi:
-          path: /api/rooms/{type}
-          method: GET
 
   getBookingById:
     handler: functions/GetBookingsById/index.handler
