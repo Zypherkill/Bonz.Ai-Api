@@ -30,12 +30,11 @@
 **Body-exempel:**
 
 ```json
-{
-  "roomType": "<room type>",
-  "checkInDate": "<YYYY-MM-DD>",
-  "checkOutDate": "<YYYY-MM-DD>",
-  "guestName": "<name>",
-  "guestEmail": "<email>"
+{"guestName": "nikki",
+  "rooms": [
+    { "type": "suite", "qty": 1 }
+  ],
+  "totalGuests": 1
 }
 ```
 
@@ -51,12 +50,11 @@
 **Body-exempel:**
 
 ```json
-{
-  "roomType": "<room type>",
-  "checkInDate": "<YYYY-MM-DD>",
-  "checkOutDate": "<YYYY-MM-DD>",
-  "guestName": "<name>",
-  "guestEmail": "<email>"
+{"guestName": "Nikkis ostfralla",
+  "rooms": [
+    { "type": "suite", "qty": 1 }
+  ],
+  "totalGuests": 1
 }
 ```
 
