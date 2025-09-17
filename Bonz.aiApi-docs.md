@@ -109,7 +109,8 @@
 
 ---
 
-Databaser
+## Databaser
+
 DynamoDB-tabeller som används:
 
 RoomTypes
