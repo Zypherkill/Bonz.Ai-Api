@@ -55,7 +55,6 @@
     "numberOfRooms": 1,
     "status": "confirmed"
 }
-}
 
 ```
 ---
@@ -97,8 +96,6 @@
     "createdAt": "2025-09-17T12:27:53.002Z",
     "PK": "121db7be"
 }
-
-
 ```
 
 ---
