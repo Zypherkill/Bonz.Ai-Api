@@ -19,7 +19,17 @@ export const handler = async (event) => {
             });
         }
 
-        return sendResponse(200, updatedBooking);
+        return sendResponse(200, {
+			PK: updatedBooking.PK,
+			guestName: updatedBooking.guestName,
+			rooms: updatedBooking.rooms,
+			totalGuests: updatedBooking.totalGuests,
+			totalPrice: updatedBooking.totalPrice,
+			createdAt: updatedBooking.createdAt,
+			updatedAt: updatedBooking.updatedAt,
+			numberOfRooms: updatedBooking.numberOfRooms,
+			status: updatedBooking.status
+		});
     } catch (err) {
         if (err.message.includes('exceeds room capacity') || err.message.includes('does not exist')) {
             return sendResponse(400, { error: err.message });
