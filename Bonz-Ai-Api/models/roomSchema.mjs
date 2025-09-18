@@ -1,9 +1,7 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { dynamoDb } from '../utils/dynamoClient.mjs';
 
 
-const client = new DynamoDBClient({ region: 'eu-north-1' });
-const dynamoDb = DynamoDBDocumentClient.from(client);
 
 const ROOM_TABLE = 'RoomTypes';
 

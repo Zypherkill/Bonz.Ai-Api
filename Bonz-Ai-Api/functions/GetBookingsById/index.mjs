@@ -1,9 +1,7 @@
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { GetCommand } from '@aws-sdk/lib-dynamodb';
+import { dynamoDb } from '../../utils/dynamoClient.mjs';
 import { sendResponse } from '../../responses/index.mjs';
 
-const client = new DynamoDBClient({ region: 'eu-north-1' });
-const dynamoDb = DynamoDBDocumentClient.from(client);
 
 const BOOKINGS_TABLE = 'Bookings';
 
@@ -28,7 +26,18 @@ export const handler = async (event) => {
 			});
 		}
 
-		return sendResponse(200, result.Item);
+		const formattedBooking = {
+			PK: result.Item.PK,
+			guestName: result.Item.guestName,
+			rooms: result.Item.rooms,
+			totalGuests: result.Item.totalGuests,
+			totalPrice: result.Item.totalPrice,
+			createdAt: result.Item.createdAt,
+			updatedAt: result.Item.updatedAt,
+			numberOfRooms: result.Item.numberOfRooms,
+			status: result.Item.status
+		};
+		return sendResponse(200, formattedBooking);
 	} catch (err) {
 		console.error(err);
 		return sendResponse(500, { error: err.message });

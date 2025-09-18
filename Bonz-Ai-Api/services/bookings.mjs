@@ -7,8 +7,7 @@ import {
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { generateBookingId } from '../utils/generateBookingId.mjs';
 
-const client = new DynamoDBClient({ region: 'eu-north-1' });
-const dynamoDb = DynamoDBDocumentClient.from(client);
+import { dynamoDb } from '../utils/dynamoClient.mjs';
 
 const BOOKINGS_TABLE = 'Bookings';
 const ROOMS_TABLE = 'RoomTypes';
