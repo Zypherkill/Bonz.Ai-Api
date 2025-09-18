@@ -1,7 +1,7 @@
 # Bonzai Booking API – Dokumentation
 
 ## Bookings
-**[Länk](https://4rwf69xlx2.execute-api.eu-north-1.amazonaws.com/api/bookings)
+** [Länk](https://4rwf69xlx2.execute-api.eu-north-1.amazonaws.com/api/bookings)
 
 ### Hämta alla bokningar
 
